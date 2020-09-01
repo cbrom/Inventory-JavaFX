@@ -17,6 +17,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        Runtime.getRuntime().exec("open " + App.class.getResource("sample.ics").toString());
         scene = new Scene(loadFXML("sample"), 1400, 900);
         scene.getStylesheets().add(App.class.getResource("css/app.css").toString());
         stage.setScene(scene);
