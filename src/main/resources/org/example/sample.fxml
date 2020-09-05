@@ -26,32 +26,48 @@
                      </image></ImageView>
                   <GridPane id="brandGridPane" minWidth="167.0">
                     <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="28.0" minWidth="28.0" prefWidth="23.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="40.0" minWidth="28.0" prefWidth="23.0" />
                       <ColumnConstraints hgrow="SOMETIMES" prefWidth="43.0" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <ImageView id="companyLogoImageView" fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView id="companyLogoImageView" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@img/company-logo.png" />
+                              <Image url="@img/logo.png" />
                            </image>
                         </ImageView>
-                        <Label id="companyNameLabel" text="Company Name" textFill="WHITE" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="LEFT">
+                        <Label id="companyNameLabel" style="-fx-background-color: #BFAC68;" text="RESTORE TECH" textFill="WHITE" underline="true" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="LEFT">
                            <font>
                               <Font name="Apple Symbols" size="26.0" />
                            </font>
                            <padding>
-                              <Insets left="7.2" />
+                              <Insets left="7.2" right="6.0" />
                            </padding>
                         </Label>
                      </children>
                   </GridPane>
-                  <TextField fx:id="searchTextField" maxWidth="437.0" minHeight="31.0" onAction="#searchOnAction" promptText="Search inventory, users ..." style="-fx-background-color: #2C8AF5; -fx-background-image: url('img/search.png'); -fx-background-position: right center; -fx-background-repeat: no-repeat; -fx-background-size: 40; -fx-font-size: 20; -fx-text-fill: white;" GridPane.columnIndex="1" GridPane.halignment="LEFT">
-                     <font>
-                        <Font name="Apple Symbols" size="26.0" />
-                     </font></TextField>
+                  <GridPane GridPane.columnIndex="1" GridPane.halignment="LEFT">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="40" minWidth="10.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <TextField fx:id="searchTextField" maxWidth="437.0" minHeight="31.0" onAction="#searchOnAction" promptText="Search inventory, users ..." style="-fx-background-color: #2C8AF5; -fx-background-image: url('img/search.png'); -fx-background-position: right center; -fx-background-repeat: no-repeat; -fx-background-size: 40; -fx-font-size: 20; -fx-text-fill: white;">
+                           <font>
+                              <Font name="Apple Symbols" size="26.0" />
+                           </font>
+                        </TextField>
+                        <ImageView fitHeight="40.0" fitWidth="40.0" onMouseClicked="#calendarClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT">
+                           <image>
+                              <Image url="@img/calendar.png" />
+                           </image></ImageView>
+                     </children>
+                  </GridPane>
                </children>
             </GridPane>
          </children></HBox>
@@ -343,11 +359,11 @@
                                     <Font name="Apple Symbols" size="20.0" />
                                  </font>
                               </Label>
-                              <RadioButton mnemonicParsing="false" text="Compact" textFill="#515e6b" GridPane.columnIndex="1">
+                              <RadioButton fx:id="compactRadioButton" mnemonicParsing="false" onAction="#compactViewClicked" text="Compact" textFill="#515e6b" GridPane.columnIndex="1">
                                  <font>
                                     <Font name="Apple Symbols" size="18.0" />
                                  </font></RadioButton>
-                              <RadioButton layoutX="124.0" layoutY="13.0" mnemonicParsing="false" text="Extended" textFill="#515e6b" GridPane.columnIndex="2">
+                              <RadioButton fx:id="extendedRadioButton" layoutX="124.0" layoutY="13.0" mnemonicParsing="false" onAction="#extendedViewClicked" text="Extended" textFill="#515e6b" GridPane.columnIndex="2">
                                  <font>
                                     <Font name="Apple Symbols" size="18.0" />
                                  </font></RadioButton>
@@ -397,11 +413,11 @@
                   </GridPane>
                    <HBox nodeOrientation="RIGHT_TO_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                        <children>
-                           <Button fx:id="nextButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" style="-fx-border-radius: 4;" styleClass="buttonClass" text="Next &gt;&gt;" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+                           <Button fx:id="nextButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#navNext" style="-fx-border-radius: 4;" styleClass="buttonClass" text="Next &gt;&gt;" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
                            <font>
                               <Font size="17.0" />
                            </font></Button>
-                           <Label alignment="CENTER" style="-fx-text-fill: 5D7997; -fx-background-color: white; -fx-border-color: transparent;" text="1 of /23" textAlignment="CENTER" textFill="#5d7997">
+                           <Label fx:id="paginationLabel" alignment="CENTER" style="-fx-text-fill: 5D7997; -fx-background-color: white; -fx-border-color: transparent;" text="1 of /23" textAlignment="CENTER" textFill="#5d7997">
                            <font>
                               <Font name="Apple Symbols" size="16.0" />
                            </font>
@@ -411,7 +427,7 @@
                            <padding>
                               <Insets left="60.0" right="60.0" />
                            </padding></Label>
-                           <Button id="previousButton" fx:id="previousButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" styleClass="buttonClass" text="&lt;&lt;Previous" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+                           <Button id="previousButton" fx:id="previousButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#navPrevious" styleClass="buttonClass" text="&lt;&lt;Previous" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
                            <font>
                               <Font size="17.0" />
                            </font></Button>
