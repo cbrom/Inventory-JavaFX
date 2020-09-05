@@ -269,6 +269,7 @@ public class Customer {
                 ", discount=" + discount +
                 ", cost=" + cost +
                 ", comment=" + comment +
+                ", imageUrl=" + imageUrl +
                 '}';
     }
 
@@ -346,11 +347,11 @@ public class Customer {
         return true;
     }
 
-    public ArrayList<Customer> getAll() throws SQLException {
-        String statement = "select * from customers";
-        System.out.println("This is" + Database.getConnection());
-        Statement stmt = Database.getConnection().createStatement();
-        ResultSet resultSet = stmt.executeQuery(statement);
+    public ArrayList<Customer> getAll(int offset, int amount) throws SQLException {
+        PreparedStatement stmt = Database.getConnection().prepareStatement("SELECT * FROM customers LIMIT ?, ?");
+        stmt.setInt(1, offset);
+        stmt.setInt(2, amount);
+        ResultSet resultSet = stmt.executeQuery();
         ArrayList<Customer> allCustomers = new ArrayList<>();
         while (resultSet.next()) {
             Customer customer = new Customer();
@@ -361,6 +362,16 @@ public class Customer {
 
 
         return allCustomers;
+    }
+
+    public int countRecords() throws SQLException {
+        String statement = "SELECT COUNT(*) AS total FROM customers";
+        Statement stmt = Database.getConnection().createStatement();
+        ResultSet resultSet = stmt.executeQuery(statement);
+        if (resultSet.next()) {
+            return resultSet.getInt("total");
+        }
+        return 0;
     }
 
     public Customer get(int id) throws SQLException {
@@ -378,12 +389,12 @@ public class Customer {
         return customer;
     }
 
-    public ArrayList<Customer> search(String searchTerm) throws SQLException {
+    public ArrayList<Customer> search(String searchTerm, int offset, int amount) throws SQLException {
         searchTerm = "%" + searchTerm + "%";
         ArrayList<Customer> resultCustomers = new ArrayList<>();
         PreparedStatement stmt = Database.getConnection().prepareStatement("SELECT * FROM customers WHERE " +
                 "name LIKE ? OR status LIKE ? OR comment LIKE ? OR phone_number LIKE ? OR location LIKE ? " +
-                "OR stage LIKE ? OR result LIKE ?");
+                "OR stage LIKE ? OR result LIKE ? LIMIT ?, ?");
         stmt.setString(1, searchTerm);
         stmt.setString(2, searchTerm);
         stmt.setString(3, searchTerm);
@@ -391,6 +402,9 @@ public class Customer {
         stmt.setString(5, searchTerm);
         stmt.setString(6, searchTerm);
         stmt.setString(7, searchTerm);
+        stmt.setInt(8, offset);
+        stmt.setInt(9, amount);
+
         ResultSet resultSet = stmt.executeQuery();
 
         while (resultSet.next()) {
@@ -402,6 +416,28 @@ public class Customer {
 
 
         return resultCustomers;
+    }
+
+    public int countSearch(String searchTerm) throws SQLException {
+
+        searchTerm = "%" + searchTerm + "%";
+        ArrayList<Customer> resultCustomers = new ArrayList<>();
+        PreparedStatement stmt = Database.getConnection().prepareStatement("SELECT COUNT(*) As total FROM customers WHERE " +
+                "name LIKE ? OR status LIKE ? OR comment LIKE ? OR phone_number LIKE ? OR location LIKE ? " +
+                "OR stage LIKE ? OR result LIKE ?");
+        stmt.setString(1, searchTerm);
+        stmt.setString(2, searchTerm);
+        stmt.setString(3, searchTerm);
+        stmt.setString(4, searchTerm);
+        stmt.setString(5, searchTerm);
+        stmt.setString(6, searchTerm);
+        stmt.setString(7, searchTerm);
+
+        ResultSet resultSet = stmt.executeQuery();
+        if (resultSet.next()) {
+            return resultSet.getInt("total");
+        }
+        return 0;
     }
 
     private void populateCustomer(ResultSet resultSet, Customer customer) throws SQLException {
