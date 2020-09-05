@@ -18,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.util.converter.NumberStringConverter;
+import org.example.App;
 import org.example.models.Customer;
 
 
@@ -33,9 +34,13 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
+    private static final int COMPACT = 20;
+    private static final int EXTENDED = 30;
     private static SimpleIntegerProperty status;
     public static final int CREATING=0, EDITING=1, SEARCHING=2, DELETING=3, NAVIGATING=4, BROWSING=5, NOTHING=6;
+    public static final int COMPACTLIST = 11;
     private static Customer customer;
+    private static int NavigationPage = 0;
 
     /*
     customers information tableview and its columns
@@ -115,6 +120,12 @@ public class Controller implements Initializable {
     Button nextButton;
 
     /*
+    pagination
+     */
+    @FXML
+    Label paginationLabel;
+
+    /*
     Header fields
      */
     @FXML
@@ -122,7 +133,35 @@ public class Controller implements Initializable {
     @FXML
     ImageView userImageView;
 
+    /*
+    Radio Buttons
+     */
+    @FXML
+    RadioButton extendedRadioButton;
+    @FXML
+    RadioButton compactRadioButton;
+
+    ToggleGroup viewToggleGroup = new ToggleGroup();
+
     ObservableList<Customer> data;
+
+    public void setToggleRadioButtons() {
+        compactRadioButton.setSelected(true);
+        extendedRadioButton.setToggleGroup(viewToggleGroup);
+        compactRadioButton.setToggleGroup(viewToggleGroup);
+    }
+
+    public int getView() {
+        RadioButton rd  = (RadioButton)viewToggleGroup.getSelectedToggle();
+        String selected = rd.getText();
+        if (selected.equals("Compact")) {
+            return COMPACT;
+        } else if (selected.equals("Extended" )) {
+            return EXTENDED;
+        }
+        return -1;
+    }
+
 
     public void setDetailsEditable(boolean value) {
         nameTextField.setEditable(value);
@@ -162,6 +201,81 @@ public class Controller implements Initializable {
     }
 
     @FXML
+    public void extendedViewClicked(ActionEvent event) {
+        previousButton.setDisable(true);
+        nextButton.setDisable(true);
+        NavigationPage = 0;
+
+        try {
+            setPagination();
+            data = FXCollections.observableArrayList();
+            if (getStatus() == SEARCHING) {
+                data.addAll(customer.search(searchTextField.getText(), NavigationPage * COMPACTLIST, -1));
+            } else {
+                data.addAll(customer.getAll(NavigationPage * COMPACTLIST, -1));
+            }
+
+            contentTableView.setItems(data);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void compactViewClicked(ActionEvent event) {
+        previousButton.setDisable(false);
+        nextButton.setDisable(false);
+        NavigationPage = 0;
+
+        try {
+            navigate();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void navNext(ActionEvent actionEvent) {
+        try {
+            int total = getTotal();
+            if (NavigationPage < total/COMPACTLIST) {
+                NavigationPage += 1;
+
+                navigate();
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+    }
+
+    @FXML
+    public void navPrevious(ActionEvent actionEvent) {
+        try {
+            if (NavigationPage > 0) {
+                NavigationPage -= 1;
+
+                navigate();
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    private void navigate() throws SQLException {
+        setPagination();
+        data = FXCollections.observableArrayList();
+        if (getStatus() == SEARCHING) {
+            data.addAll(customer.search(searchTextField.getText(), NavigationPage * COMPACTLIST, COMPACTLIST));
+        } else {
+            data.addAll(customer.getAll(NavigationPage * COMPACTLIST, COMPACTLIST));
+        }
+
+        contentTableView.setItems(data);
+    }
+
+    @FXML
     private void createOnAction(ActionEvent event) {
         contentTableView.getSelectionModel().clearSelection();
         Controller.customer.empty();
@@ -179,10 +293,12 @@ public class Controller implements Initializable {
         } else if (Controller.getStatus() == EDITING) {
             Controller.setStatus(BROWSING);
             setDetailsEditable(false);
-        } else if (Controller.getStatus() == BROWSING) {
+        } else if (Controller.getStatus() == BROWSING || Controller.getStatus() == SEARCHING) {
             Customer selectedCustomer = (Customer)contentTableView.getSelectionModel().getSelectedItem();
             try {
                 selectedCustomer.delete();
+                File file = new File(selectedCustomer.getImageUrl());
+                file.delete();
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -211,13 +327,18 @@ public class Controller implements Initializable {
         } else if (Controller.getStatus() == EDITING) {
             System.out.println("Save here");
             Customer selectedCustomer = (Customer)contentTableView.getSelectionModel().getSelectedItem();
+            String prevUrl = selectedCustomer.getImageUrl();
             selectedCustomer.copyFromCustomer(Controller.customer);
             selectedCustomer.update();
+            if (!selectedCustomer.getImageUrl().equals(prevUrl)) {
+                File file = new File(prevUrl);
+                file.delete();
+            }
             Controller.setStatus(BROWSING);
             setDetailsEditable(false);
             contentTableView.getSelectionModel().clearSelection();
         }
-        else if (Controller.getStatus() == BROWSING) {
+        else if (Controller.getStatus() == BROWSING || Controller.getStatus() == SEARCHING) {
             Controller.setStatus(EDITING);
             setDetailsEditable(true);
         }
@@ -227,12 +348,34 @@ public class Controller implements Initializable {
     public void searchOnAction(ActionEvent action) {
         String searchString = searchTextField.getText();
         try {
-            ArrayList<Customer> searchResults = customer.search(searchString);
-            data = FXCollections.observableArrayList();
-            data.addAll(searchResults);
-            contentTableView.setItems(data);
+            NavigationPage = 0;
+            setStatus(SEARCHING);
+            if (getView() == COMPACT) {
+                ArrayList<Customer> searchResults = customer.search(searchString, NavigationPage, COMPACTLIST);
+                data = FXCollections.observableArrayList();
+                data.addAll(searchResults);
+                contentTableView.setItems(data);
+                NavigationPage = 0;
+            } else if (getView() == EXTENDED) {
+                ArrayList<Customer> searchResults = customer.search(searchString, NavigationPage, -1);
+                data = FXCollections.observableArrayList();
+                data.addAll(searchResults);
+                contentTableView.setItems(data);
+                NavigationPage = 0;
+            }
+
+            setPagination();
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+        }
+    }
+
+    public void calendarClicked(MouseEvent event) {
+        try {
+            Runtime.getRuntime().exec("open " + App.class.getResource("sample.ics").toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -260,7 +403,7 @@ public class Controller implements Initializable {
                 if (!mainDir.exists()) {
                     mainDir.mkdirs();
                 }
-                File out = new File(System.getProperty("user.home")+System.getProperty("file.separator") + "/user-management/img/" + file.getName());
+                File out = new File(System.getProperty("user.home")+System.getProperty("file.separator") + "/user-management/img/" + System.currentTimeMillis() + file.getName());
                 try {
                     Files.copy(file.toPath(), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     customer.setImageUrl(out.getAbsolutePath());
@@ -287,6 +430,9 @@ public class Controller implements Initializable {
                         return "Update";
                     case BROWSING:
                         System.out.println("Browsing");
+                        return "Edit";
+                    case SEARCHING:
+                        System.out.println("Searching");
                         return "Edit";
                     case NOTHING:
                         System.out.println("Nothing");
@@ -315,11 +461,11 @@ public class Controller implements Initializable {
             }
             @Override
             protected boolean computeValue() {
-                if (status.get() == BROWSING ) {
+                if (getStatus() == BROWSING || getStatus() == SEARCHING ) {
                     return false;
                 }
-                if ( (status.get() == EDITING ||
-                        status.get() == CREATING) &&
+                if ( (getStatus() == EDITING ||
+                        getStatus() == CREATING) &&
                         isDetailsEmpty())
                 {
                     return true;
@@ -349,6 +495,9 @@ public class Controller implements Initializable {
                         return "Cancel";
                     case BROWSING:
                         System.out.println("Browsing");
+                        return "Delete";
+                    case SEARCHING:
+                        System.out.println("Searching");
                         return "Delete";
                     case NOTHING:
                         System.out.println("Nothing");
@@ -438,6 +587,24 @@ public class Controller implements Initializable {
         );
     }
 
+    public int getTotal() throws SQLException {
+        if (getStatus() == SEARCHING) {
+            return customer.countSearch(searchTextField.getText());
+        } else {
+            return customer.countRecords();
+        }
+    }
+
+    public void setPagination() throws SQLException {
+        if (getView() == COMPACT) {
+            int total = getTotal();
+            paginationLabel.setText((NavigationPage + 1) + " of /" + ((total/COMPACTLIST) + 1));
+        } else if (getView() == EXTENDED) {
+            paginationLabel.setText("1 of / 1");
+        }
+
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -447,11 +614,13 @@ public class Controller implements Initializable {
         bindTableColumns();
         buttonsBinder();
         setDetailsToValue();
+        setToggleRadioButtons();
 
         data = FXCollections.observableArrayList();
 
         try {
-            data.addAll(customer.getAll());
+            setPagination();
+            data.addAll(customer.getAll(NavigationPage * COMPACTLIST, COMPACTLIST));
             contentTableView.setItems(data);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -471,14 +640,15 @@ public class Controller implements Initializable {
         customer.commentProperty().bindBidirectional(commentTextField.textProperty());
 
         contentTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            int changed = Controller.getStatus() == SEARCHING ? SEARCHING : BROWSING;
             if (newSelection != null) {
-                Controller.setStatus(BROWSING);
+                Controller.setStatus(changed);
                 Customer c = (Customer) contentTableView.getSelectionModel().getSelectedItem();
                 setCurrentCustomer(c);
                 System.out.println(Controller.customer);
 
             } else {
-                Controller.setStatus(BROWSING);
+                Controller.setStatus(changed);
                 emptyCurrentCustomer();
             }
         });
