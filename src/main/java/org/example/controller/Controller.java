@@ -145,6 +145,11 @@ public class Controller implements Initializable {
 
     ObservableList<Customer> data;
 
+    @FXML
+    public void switchToUser(MouseEvent event) throws IOException {
+        App.setRoot("primary");
+    }
+
     public void setToggleRadioButtons() {
         compactRadioButton.setSelected(true);
         extendedRadioButton.setToggleGroup(viewToggleGroup);
@@ -399,7 +404,7 @@ public class Controller implements Initializable {
                     e.printStackTrace();
                 }
 
-                File mainDir = new File(System.getProperty("user.home")+System.getProperty("file.separator") + "/user-management/img/");
+                File mainDir = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "/user-management/img/");
                 if (!mainDir.exists()) {
                     mainDir.mkdirs();
                 }
