@@ -31,7 +31,7 @@
     -fx-font-family: "Apple Symbols";
 }
 
-#editButton, #createButton, #nextButton, #previousButton {
+#editButton, #createButton, #nextButton, #previousButton, #signinButton {
     -fx-text-fill :  #007AFF;
     -fx-background-color: white;
     -fx-border-color:  #007AFF;
@@ -40,7 +40,7 @@
     -fx-font-size: 17;
 }
 
-#editButton:hover, #createButton:hover, #nextButton:hover, #previousButton:hover {
+#editButton:hover, #createButton:hover, #nextButton:hover, #previousButton:hover, #signinButton:hover {
     -fx-text-fill :  white;
     -fx-background-color: #007AFF;
     -fx-border-color:  #007AFF;
@@ -49,7 +49,7 @@
     -fx-font-size: 17;
 }
 
-#deleteButton {
+#deleteButton, #logoutButton {
     -fx-text-fill : #FF0000;
     -fx-background-color: white;
     -fx-border-color: #FF0000;
@@ -57,7 +57,7 @@
     -fx-font-family: "Apple Symbols";
     -fx-font-size: 17;
 }
-#deleteButton:hover {
+#deleteButton:hover, #logoutButton:hover {
     -fx-text-fill : white;
     -fx-background-color: #FF0000;
     -fx-border-color: #FF0000;
