@@ -1,16 +1,130 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Button?>
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.PrimaryController">
+<VBox id="parentVbox" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="1000.0" spacing="38.0" style="-fx-background-color: radial-gradient(radius 180%, #0071EF, derive(#0071EF, -10%), derive(#0071EF, 10%));" styleClass="container" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.PrimaryController">
    <children>
-      <Label text="Primary View" />
-      <Button fx:id="primaryButton" text="Switch to Secondary View" onAction="#switchToSecondary"/>
+      <HBox id="headerHbox" prefHeight="100.0" prefWidth="200.0" style="-fx-max-height: 48;">
+         <children>
+            <GridPane id="headerGridPane" HBox.hgrow="ALWAYS">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="NEVER" minWidth="219.0" prefWidth="200.0" />
+                  <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <ImageView fx:id="userImageView" fitHeight="48.0" fitWidth="48.0" onMouseClicked="#switchToDashboard" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
+                     <image>
+                        <Image url="@img/home.png" />
+                     </image></ImageView>
+                  <GridPane id="brandGridPane" minWidth="167.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="40.0" minWidth="28.0" prefWidth="23.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" prefWidth="43.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <ImageView id="companyLogoImageView" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@img/logo.png" />
+                           </image>
+                        </ImageView>
+                        <Label id="companyNameLabel" style="-fx-background-color: #BFAC68;" text="RESTORE TECH" textFill="WHITE" underline="true" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="LEFT">
+                           <font>
+                              <Font name="Apple Symbols" size="26.0" />
+                           </font>
+                           <padding>
+                              <Insets left="7.2" right="6.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </GridPane>
+                  <GridPane GridPane.columnIndex="1" GridPane.halignment="LEFT">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="40" minWidth="10.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
+               </children>
+            </GridPane>
+         </children></HBox>
+      <HBox minHeight="250.0" style="-fx-background-color: white; -fx-background-radius: 6;" VBox.vgrow="ALWAYS">
+         <VBox.margin>
+            <Insets bottom="400.0" />
+         </VBox.margin>
+         <children>
+            <GridPane HBox.hgrow="ALWAYS">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="60" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label style="-fx-background-color: white;" text="User Details" GridPane.halignment="CENTER">
+                     <font>
+                        <Font name="Apple Symbols" size="36.0" />
+                     </font></Label>
+                  <GridPane vgap="20.0" GridPane.rowIndex="1" GridPane.vgrow="NEVER">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="500.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+                    </rowConstraints>
+                     <children>
+                        <Label text="User Name" GridPane.halignment="CENTER">
+                           <font>
+                              <Font name="Apple Symbols" size="26.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="10.0" layoutY="34.0" text="Password" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                           <font>
+                              <Font name="Apple Symbols" size="26.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="userNameTextField" minHeight="31.0" style="-fx-background-color: white; -fx-border-color: DDDDDD;" GridPane.columnIndex="1" />
+                        <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#logout" text="Logout" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                           <font>
+                              <Font name="Apple Symbols" size="17.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="signinButton" mnemonicParsing="false" onAction="#login" text="Update" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                           <font>
+                              <Font name="Apple Symbols" size="17.0" />
+                           </font>
+                        </Button>
+                        <PasswordField fx:id="passwordTextField" style="-fx-border-color: DDDDDD; -fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                     </children>
+                     <GridPane.margin>
+                        <Insets left="126.0" top="54.0" />
+                     </GridPane.margin>
+                  </GridPane>
+               </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </GridPane>
+         </children></HBox>
+
    </children>
    <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+      <Insets left="60.0" right="60.0" top="17.0" />
    </padding>
 </VBox>
