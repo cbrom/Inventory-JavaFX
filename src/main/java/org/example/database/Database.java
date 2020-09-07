@@ -47,6 +47,13 @@ public class Database {
                 "cost INTEGER, " +
                 "comment VARCHAR(255))";
         stmt.executeUpdate(statement);
+
+        statement = "CREATE TABLE IF NOT EXISTS users " +
+                "(_id INTEGER PRIMARY KEY NOT NULL , " +
+                "user_name VARCHAR(255), " +
+                "password VARCHAR(255), " +
+                "is_logged_in BOOLEAN ) ";
+        stmt.execute(statement);
         stmt.close();
     }
 }
