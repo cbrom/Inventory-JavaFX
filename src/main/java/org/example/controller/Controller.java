@@ -20,6 +20,7 @@ import javafx.stage.FileChooser;
 import javafx.util.converter.NumberStringConverter;
 import org.example.App;
 import org.example.models.Customer;
+import org.example.rest.RestAPI;
 
 
 import java.io.*;
@@ -630,6 +631,9 @@ public class Controller implements Initializable {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+        RestAPI restAPI = new RestAPI();
+        restAPI.run();
 
         customer.nameProperty().bindBidirectional(nameTextField.textProperty());
         ageTextField.textProperty().bindBidirectional(customer.ageProperty(), new NumberStringConverter());
